@@ -2,6 +2,7 @@ require("pretty-error").start();
 const asyncHandler = require("express-async-handler");
 const log = require("log4js").getLogger("avatar");
 log.level = "info";
+const createProject = require("../publisher/createProject");
 
 // * @route POST /api/v1/projects
 // @desc    post dummy
@@ -13,9 +14,9 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     projectName: Math.random().toString(36).substring(3, 9),
     createdAt: new Date().getTime(),
   };
-  log.debug("project", project);
 
   // * send to publisher
+  await createProject(project);
 
   res.status(201).json({
     success: true,
