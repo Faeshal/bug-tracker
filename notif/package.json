@@ -11,5 +11,15 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "name": "notif",
+  "version": "1.0.0",
+  "main": "server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

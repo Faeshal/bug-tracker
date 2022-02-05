@@ -1,5 +1,5 @@
 require("pretty-error").start();
-const log = require("log4js").getLogger("scrap-publisher");
+const log = require("log4js").getLogger("publisher-createProject");
 log.level = "info";
 const rabbitConn = require("../util/rabbitConn");
 

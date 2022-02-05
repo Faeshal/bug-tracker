@@ -1,11 +1,12 @@
 "use strict";
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 4000;
 const morgan = require("morgan");
-const projectRoutes = require("./route/project");
+const notifRoutes = require("./route/notif");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
+const createProject = require("./consumer/createProject");
 
 // * logger
 app.use(morgan("tiny"));
@@ -14,16 +15,19 @@ app.use(morgan("tiny"));
 app.use(express.json());
 
 //  * Routing
-app.use(projectRoutes);
+app.use(notifRoutes);
 
 app.get("/", (res) => {
-  res.json({ success: true, message: "Project Service UP!" });
+  res.json({ success: true, message: "Notif Service UP!" });
 });
 
 //  * SERVER LISTEN
 const server = app.listen(PORT, () => {
-  log.info(`Project service is running on port ${PORT}`);
+  log.info(`Notif service is running on port ${PORT}`);
 });
+
+// * consumer
+createProject();
 
 // * Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
