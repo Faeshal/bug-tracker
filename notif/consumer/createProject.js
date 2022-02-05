@@ -12,8 +12,8 @@ async function consumeNewProject() {
     // * get queue name & consume
     await channel.assertQueue("createProject");
     channel.consume("createProject", (message) => {
-      log.debug("data from project service:", message);
-      //   const input = JSON.parse(message.content.toString());
+      const input = JSON.parse(message.content.toString());
+      console.log("data from project service:", input);
       channel.ack(message);
     });
 
