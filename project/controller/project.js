@@ -5,22 +5,37 @@ log.level = "info";
 const createProject = require("../publisher/createProject");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const paginate = require("../util/paginate");
 
 // * @route GET /api/v1/projects
 // @desc    get all projects
 // @access  Private
 exports.getProjects = asyncHandler(async (req, res, next) => {
+  const { search } = req.query;
   const data = await prisma.project.findMany({
+    where: { title: { contains: search } },
     skip: req.skip,
     take: req.query.limit,
     orderBy: {
       id: "desc",
     },
+    select: { id: true, title: true, creatorId: true, memberIds: true },
   });
   const totalData = await prisma.project.count();
+
+  const pagin = await paginate({
+    length: totalData,
+    limit: req.query.limit,
+    page: req.query.page,
+    req,
+  });
+
   res.status(200).json({
     success: true,
     totalData,
+    totalPage: pagin.totalPage,
+    currentPage: pagin.currentPage,
+    nextPage: pagin.nextPage,
     data,
   });
 });
@@ -73,11 +88,26 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const data = await prisma.project.update({
+  let { title, desc, memberIds } = req.body;
+  const creatorId = Math.ceil(Math.random() * 1000);
+  let fmtmMemberIds = memberIds.concat(",", creatorId);
+
+  const project = await prisma.project.findUnique({
     where: { id: parseInt(id) },
-    data: req.body,
   });
-  log.debug(data);
+  if (!project) {
+    return res
+      .status(404)
+      .json({ success: false, message: "project not found" });
+  }
+  await prisma.project.update({
+    where: { id: parseInt(id) },
+    data: {
+      title,
+      desc,
+      memberIds: fmtmMemberIds,
+    },
+  });
   res.status(200).json({
     success: true,
     message: "update success",
