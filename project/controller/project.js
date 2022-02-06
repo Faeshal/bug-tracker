@@ -6,24 +6,49 @@ const createProject = require("../publisher/createProject");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+// * @route GET /api/v1/projects
+// @desc    get all projects
+// @access  Private
+exports.getProjects = asyncHandler(async (req, res, next) => {
+  const data = await prisma.project.findMany({
+    skip: req.skip,
+    take: req.query.limit,
+    orderBy: {
+      id: "desc",
+    },
+  });
+  const totalData = await prisma.project.count();
+  res.status(200).json({
+    success: true,
+    totalData,
+    data,
+  });
+});
+
 // * @route POST /api/v1/projects
-// @desc    post dummy
+// @desc    create new project
 // @access  Private
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { title, desc } = req.body;
+  let { title, desc, memberIds } = req.body;
   const creatorId = Math.ceil(Math.random() * 1000);
+  let fmtmMemberIds = memberIds.concat(",", creatorId);
 
   // * save to database
   const result = await prisma.project.create({
-    data: { title, desc, creatorId },
+    data: {
+      title,
+      desc,
+      creatorId: creatorId.toString(),
+      memberIds: fmtmMemberIds,
+    },
   });
 
   // * send to publisher
-  let project = {
-    projectId: result.id,
-    projectName: title,
-  };
-  await createProject(project);
+  // let project = {
+  //   projectId: result.id,
+  //   projectName: title,
+  // };
+  // await createProject(project);
 
   res.status(201).json({
     success: true,
@@ -32,7 +57,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 });
 
 // * @route GET /api/v1/projects/:id
-// @desc    get deatil project
+// @desc    get detail project
 // @access  Private
 exports.getProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -40,5 +65,41 @@ exports.getProject = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: data || {},
+  });
+});
+
+// * @route PUT /api/v1/projects/:id
+// @desc    update project
+// @access  Private
+exports.updateProject = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const data = await prisma.project.update({
+    where: { id: parseInt(id) },
+    data: req.body,
+  });
+  log.debug(data);
+  res.status(200).json({
+    success: true,
+    message: "update success",
+  });
+});
+
+// * @route DELETE /api/v1/projects/:id
+// @desc    delete project
+// @access  Private
+exports.deleteProject = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const project = await prisma.project.findUnique({
+    where: { id: parseInt(id) },
+  });
+  if (!project) {
+    return res
+      .status(404)
+      .json({ success: false, message: "project not found" });
+  }
+  await prisma.project.delete({ where: { id: parseInt(id) } });
+  res.status(200).json({
+    success: true,
+    message: "delete success",
   });
 });

@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 2000;
 const morgan = require("morgan");
+const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
@@ -12,6 +13,9 @@ app.use(morgan("tiny"));
 
 // * Body Parser
 app.use(express.json());
+
+// * paginate
+app.use(paginate.middleware(3, 50));
 
 //  * Routing
 app.use(projectRoutes);
