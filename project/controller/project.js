@@ -6,6 +6,7 @@ const createProject = require("../publisher/createProject");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const paginate = require("../util/paginate");
+const { create, findOne } = require("../service/project");
 
 // * @route GET /api/v1/projects
 // @desc    get all projects
@@ -49,14 +50,26 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   let fmtmMemberIds = memberIds.concat(",", creatorId);
 
   // * save to database
-  const result = await prisma.project.create({
-    data: {
+  // const result = await prisma.project.create({
+  //   data: {
+  //     title,
+  //     desc,
+  //     creatorId: creatorId.toString(),
+  //     memberIds: fmtmMemberIds,
+  //   },
+  // });
+
+  const result = await create({
+    body: {
       title,
       desc,
       creatorId: creatorId.toString(),
       memberIds: fmtmMemberIds,
     },
   });
+  if (result.success == false) {
+    return res.status(500).json({ success: false, message: result.message });
+  }
 
   // * send to publisher
   // let project = {
@@ -67,7 +80,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    data: result,
+    data: result.data,
   });
 });
 
@@ -76,10 +89,11 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const data = await prisma.project.findUnique({ where: { id: parseInt(id) } });
+  // const data = await prisma.project.findUnique({ where: { id: parseInt(id) } });
+  const result = await findOne({ where: { id: parseInt(id) } });
   res.status(200).json({
     success: true,
-    data: data || {},
+    data: result.data || {},
   });
 });
 

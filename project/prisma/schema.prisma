@@ -15,7 +15,7 @@ model Project {
   title     String   @db.VarChar(255)
   desc      String?  @db.Text
   creatorId String      
-  memberIds String  @db.VarChar(255)
+  memberIds String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

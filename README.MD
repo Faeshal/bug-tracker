@@ -1,14 +1,14 @@
 ## List Of Services (sprint planning)
 
-1. Auth (mongodb-fastify)
+1. Auth (postgree-express)
 
    - register
    - login
    - logout
+   - refresh token (jwt)
    - get current user data
-   - get all users (+filter by name)
+   - get all users (+filter by name & offset based pagination)
    - get detail user
-   - offset based pagination
 
 2. Project (mariadb-express)
 
@@ -27,7 +27,7 @@
    - CRRUD
    - cursor based pagination
 
-5. Notif (couchdb-express)
+5. Notif (MongoDB-express)
 
    - read notifications
    - search by title
