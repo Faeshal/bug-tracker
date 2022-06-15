@@ -2,13 +2,13 @@
 
 1. Auth (postgree-express)
 
-   - register
-   - login
-   - logout
-   - refresh token (jwt)
-   - get current user data
-   - get all users (+filter by name & offset based pagination)
-   - get detail user
+   - register ✅
+   - login ✅
+   - logout ✅
+   - refresh token (jwt) ✅
+   - get current user data ✅
+   - get all users (+filter by name & offset based pagination) ✅
+   - get detail user ✅
 
 2. Project (mariadb-express)
 
