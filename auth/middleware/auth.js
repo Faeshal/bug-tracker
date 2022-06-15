@@ -104,10 +104,8 @@ exports.generateRefreshsToken = (payload) => {
 };
 
 exports.verifyRefreshToken = async (refreshToken) => {
-  const jwkJson = await grabJwk(JWK_URL);
-  const publicConvert = jwkToPem(jwkJson.data);
   return new Promise((resolve, reject) => {
-    jwt.verify(refreshToken, publicConvert, (err, decoded) => {
+    jwt.verify(refreshToken, secret, (err, decoded) => {
       if (err) {
         console.log("Error:" + err.message);
         return reject(new Error("Error:" + err));

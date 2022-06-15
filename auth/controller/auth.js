@@ -1,5 +1,7 @@
 require("pretty-error").start();
+require("dotenv").config();
 const asyncHandler = require("express-async-handler");
+const { Op } = require("sequelize");
 const User = require("../models").user;
 const _ = require("underscore");
 const bcrypt = require("bcryptjs");
@@ -15,7 +17,7 @@ log.level = "info";
 // @desc      Signup new user
 // @access    Public
 exports.register = asyncHandler(async (req, res, next) => {
-  const { email, password, username, role, scope } = req.body;
+  const { email, password, username, role, title } = req.body;
 
   // * Hash Password
   const hashedPw = await bcrypt.hash(password, 12);
@@ -26,7 +28,7 @@ exports.register = asyncHandler(async (req, res, next) => {
     email,
     password: hashedPw,
     role,
-    scope,
+    title,
   });
   const result = await user.save();
 
@@ -35,7 +37,6 @@ exports.register = asyncHandler(async (req, res, next) => {
     id: result.id,
     email: result.email,
     role: result.role,
-    scope: result.scope,
   };
 
   // * generate Access token
@@ -44,7 +45,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   // * Generate Refresh Token
   const refreshToken = await generateRefreshsToken(payload);
 
-  res.status(200).json({
+  res.status(200).cookie("token", accessToken).json({
     success: true,
     data: { username, email, accessToken, refreshToken },
   });
@@ -93,10 +94,13 @@ exports.login = asyncHandler(async (req, res, next) => {
   // * Generate Refresh Token
   const refreshToken = await generateRefreshsToken(payload);
 
-  res.status(200).json({
-    success: true,
-    data: { id: data.id, username: data.username, accessToken, refreshToken },
-  });
+  res
+    .status(200)
+    .cookie("token", accessToken)
+    .json({
+      success: true,
+      data: { id: data.id, username: data.username, accessToken, refreshToken },
+    });
 });
 
 // * @route   POST /api/v1/auth/refresh
@@ -130,7 +134,7 @@ exports.refresh = asyncHandler(async (req, res, next) => {
 // @access  Private [admin,user]
 exports.getAccount = asyncHandler(async (req, res, next) => {
   const { id } = req.user;
-  console.log("req.user", req.user);
+  log.warn("user nih:", req.user);
   const data = await User.findOne({
     where: { id },
     attributes: { exclude: "password" },
@@ -138,5 +142,84 @@ exports.getAccount = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data,
+  });
+});
+
+// * @route GET /api/v1/auth/logout
+// @desc    logout
+// @access  Private [admin,user]
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+// * @route GET /api/v1/auth/users
+// @desc    get all users
+// @access  Private [admin]
+exports.getUsers = asyncHandler(async (req, res, next) => {
+  const { endCursor, startCursor, search } = req.query;
+  let filter = {};
+
+  if (search) {
+    let searchOption = {
+      [Op.or]: [{ username: { [Op.like]: `%${search}%` } }],
+    };
+    filter = _.extend(searchOption, filter);
+  }
+
+  // * Main Query
+  let queryObj = {
+    where: filter,
+    attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+    limit: 5,
+    after: endCursor,
+    order: [["id", "DESC"]],
+    raw: true,
+  };
+  if (startCursor) {
+    _.omit(queryObj, "after");
+    _.extend(queryObj, { before: startCursor });
+  }
+
+  let data = await User.paginate(queryObj);
+  const dataArr = data.edges;
+
+  // * Formating Data
+  let fmtData = _.map(dataArr, (obj) => {
+    const finalData = _.extend(obj.node, { cursor: obj.cursor });
+    return finalData;
+  });
+
+  res.status(200).json({
+    success: true,
+    totalData: data.totalCount,
+    limitPerPage: req.query.limit,
+    nextPage: data.pageInfo.hasNextPage,
+    previousPage: data.pageInfo.hasPreviousPage,
+    startCursor: data.pageInfo.startCursor,
+    endCursor: data.pageInfo.endCursor,
+    data: fmtData || [],
+  });
+});
+
+// * @route GET /api/v1/auth/users
+// @desc    get all users
+// @access  Private [admin]
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const data = await User.findOne({
+    where: { id },
+    attributes: { exclude: ["password"] },
+  });
+  res.status(200).json({
+    success: true,
+    data: data || {},
   });
 });

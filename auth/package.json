@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "migrate": "npx sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
@@ -27,6 +29,7 @@
     "pretty-error": "^4.0.0",
     "sequelize": "^6.20.1",
     "sequelize-cli": "^6.4.1",
+    "sequelize-cursor-pagination": "^2.3.0",
     "underscore": "^1.13.4"
   }
 }

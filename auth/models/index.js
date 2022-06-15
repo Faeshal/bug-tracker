@@ -5,7 +5,9 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/../config/config.json")[env];
+const config = require(__dirname + "/../config/config.js")[env];
+const log = require("log4js").getLogger("database");
+log.level = "info";
 const db = {};
 
 let sequelize;
@@ -26,9 +28,9 @@ if (config.use_env_variable) {
     await sequelize.sync();
     // await sequelize.authenticate();
     // await sequelize.sync({ alter: true });
-    log.info("PG Connected");
+    log.info("PG Connected 🐘");
   } catch (error) {
-    log.error("Database Connection Failure ", error);
+    log.error("PG Connection Failure 🔥", error);
     process.exit(1);
   }
 })();
