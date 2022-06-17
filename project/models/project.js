@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       project.hasMany(models.card);
       project.belongsTo(models.user, { as: "creator" });
+      project.belongsToMany(models.user, { through: models.user_project });
     }
   }
   project.init(
