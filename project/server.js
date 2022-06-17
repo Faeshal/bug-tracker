@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 2000;
 const morgan = require("morgan");
 const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
+const syncUserPub = require("./event/consumer/syncUser");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
