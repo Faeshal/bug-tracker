@@ -1,8 +1,11 @@
 require("pretty-error").start();
 const asyncHandler = require("express-async-handler");
 const _ = require("underscore");
+const User = require("../models").user;
 const Project = require("../models").project;
+const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
+const { ErrorResponse } = require("../middleware/errorHandler");
 const { create, findOne } = require("../service/project");
 const log = require("log4js").getLogger("project");
 log.level = "info";
@@ -12,6 +15,7 @@ log.level = "info";
 // @access  Private
 exports.getProjects = asyncHandler(async (req, res, next) => {
   const { search } = req.query;
+  const { role } = req.user.role;
   let filter = {};
 
   if (search) {
@@ -22,6 +26,7 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
     where: filter,
     offset: req.skip,
     order: [["createdAt", "DESC"]],
+    include: [{ model: User, attributes: ["id", "username", "email"] }],
     attributes: { exclude: ["updatedAt", "deletedAt"] },
   });
 
@@ -46,15 +51,20 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
 // @desc    create new project
 // @access  Private
 exports.createProject = asyncHandler(async (req, res, next) => {
-  let { title, description } = req.body;
+  let { title, description, members } = req.body;
   const creatorId = req.user.id;
+  log.info("user:", req.user);
 
   // * save to project
-  const result = await Project.create(title, description, creatorId);
+  const result = await Project.create({ title, description, creatorId });
 
   // * save user_project (pivot table)
+  const projectId = result.id;
+  for (member of members) {
+    await User_Project.create({ userId: member, projectId });
+  }
 
-  // * send to publisher
+  // * publish event
   // let project = {
   //   projectId: result.id,
   //   projectName: title,
@@ -63,7 +73,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    data: result.data,
+    data: result,
   });
 });
 
@@ -72,11 +82,20 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  // const data = await prisma.project.findUnique({ where: { id: parseInt(id) } });
-  const result = await Project.findOne({ where: { id: parseInt(id) } });
+  const result = await Project.findOne({
+    where: { id },
+    include: [{ model: User }],
+  });
+
+  const member = await User_Project.findAll({
+    where: { projectId: id },
+    include: [{ model: User, attributes: ["id", "username"] }],
+  });
+
   res.status(200).json({
     success: true,
-    data: result.data || {},
+    data: result || {},
+    member,
   });
 });
 
@@ -116,17 +135,19 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const project = await Project.findUnique({
-    where: { id: parseInt(id) },
-  });
-  if (!project) {
-    return res
-      .status(404)
-      .json({ success: false, message: "project not found" });
+  const userId = req.user.id;
+
+  // * check is creator project ?
+  const isCreator = await Project.findOne({ where: { id, creatorId: userId } });
+  if (!isCreator) {
+    return next(new ErrorResponse("forbidden", 400));
   }
-  await Project.delete({ where: { id: parseInt(id) } });
+
+  // * delete project
+  await Project.destroy({ where: { id } });
+
   res.status(200).json({
     success: true,
-    message: "delete success",
+    message: "successfully delete",
   });
 });

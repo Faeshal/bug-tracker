@@ -13,12 +13,7 @@ router.get("/api/v1/auth/profiles", protect, authController.getAccount);
 
 router.get("/api/v1/auth/logout", protect, authController.logout);
 
-router.get(
-  "/api/v1/auth/users",
-  protect,
-  AuthorizeRole("admin"),
-  authController.getUsers
-);
+router.get("/api/v1/auth/users", protect, authController.getUsers);
 
 router.get("/api/v1/auth/users/:id", protect, authController.getUser);
 

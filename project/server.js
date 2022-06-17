@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 2000;
 const morgan = require("morgan");
 const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
-const syncUserPub = require("./event/consumer/syncUser");
+const { errorHandler } = require("./middleware/errorHandler");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -29,6 +29,9 @@ app.get("/", (res) => {
 const server = app.listen(PORT, () => {
   log.info(`Project service is running on port ${PORT}`);
 });
+
+// * Custom Error Handler
+app.use(errorHandler);
 
 // * Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
