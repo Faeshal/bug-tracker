@@ -1,6 +1,6 @@
 ## List Of Services (sprint planning)
 
-1. Auth (postgree-express)
+1. Auth (postgree-express) [table:users]
 
    - register ✅
    - login ✅
@@ -10,26 +10,27 @@
    - get all users (+filter by name & offset based pagination) ✅
    - get detail user ✅
 
-2. Project (mariadb-express)
+2. Project (mariadb-express) [table:project,card,users]
 
-   - CRRUD
-   - search by project name
-   - offset based pagination
+   - create project
+   - get projects (+filter by name & offset based pagination)
+   - get detail project (including card)
+   - update project
+   - delete project (cascade delete card)
+   - create card
+   - update card
+   - delete card
+   - get cards by projectId (+filter by status & cursor based pagination)
+   - get detail card
 
-3. Card (mariadb-express)
+3. Comment (mariadb-express) [table:comment,users,card,project]
 
-   - CRRUD
-   - filter by status
-   - cursor based pagination
+   - create comment
+   - get comments by cardId (cursor based pagination)
+   - get detail comments
+   - update comment
+   - delete comment
 
-4. Comment (mariadb-express)
+4. Notif (MongoDB-express) [collections: notif ]
 
-   - CRRUD
-   - cursor based pagination
-
-5. Notif (MongoDB-express)
-
-   - read notifications
-   - search by title
-   - filter by type
-   - cursor based pagination
+   - gets notifications (search by title, filter by type, cursor based pagination )
