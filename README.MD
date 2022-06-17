@@ -34,3 +34,25 @@
 4. Notif (MongoDB-express) [collections: notif ]
 
    - gets notifications (search by title, filter by type, cursor based pagination )
+
+## List Of Event
+
+1. Auth:
+
+   ### Publish :
+
+   A. syncUser
+
+   ### Consume :
+
+   A.
+
+2. Project:
+
+   #### Publish :
+
+   A. x
+
+   #### Consume :
+
+   A. syncUser
