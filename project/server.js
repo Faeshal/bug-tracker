@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
 const { errorHandler } = require("./middleware/errorHandler");
+const syncUserSub = require("./event/consumer/syncUser");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -24,6 +25,8 @@ app.use(projectRoutes);
 app.get("/", (res) => {
   res.json({ success: true, message: "Project Service UP!" });
 });
+
+syncUserSub();
 
 //  * SERVER LISTEN
 const server = app.listen(PORT, () => {

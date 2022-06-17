@@ -28,5 +28,4 @@ async function syncUserSub() {
   }
 }
 
-syncUserSub();
 module.exports = syncUserSub;

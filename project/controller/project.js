@@ -51,7 +51,7 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
 // @desc    create new project
 // @access  Private
 exports.createProject = asyncHandler(async (req, res, next) => {
-  let { title, description, members } = req.body;
+  var { title, description, members } = req.body;
   const creatorId = req.user.id;
   log.info("user:", req.user);
 
@@ -60,9 +60,12 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 
   // * save user_project (pivot table)
   const projectId = result.id;
+  log.info("duar error 1");
+  members.push(creatorId);
   for (member of members) {
     await User_Project.create({ userId: member, projectId });
   }
+  log.info("duar error 2");
 
   // * publish event
   // let project = {
@@ -84,18 +87,33 @@ exports.getProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const result = await Project.findOne({
     where: { id },
-    include: [{ model: User }],
+    include: [{ model: User, attributes: ["id", "username"] }],
+    raw: true,
+    nest: true,
   });
 
-  const member = await User_Project.findAll({
+  const memberArr = await User_Project.findAll({
     where: { projectId: id },
     include: [{ model: User, attributes: ["id", "username"] }],
+    raw: true,
+    nest: true,
   });
+  log.info("member arr:", memberArr);
+
+  // * formating data
+
+  let memberData = [];
+  for (member of memberArr) {
+    const { user } = member;
+    memberData.push(user);
+  }
+
+  // * extend data
+  let fmtData = _.extend({ members: memberData }, result);
 
   res.status(200).json({
     success: true,
-    data: result || {},
-    member,
+    data: fmtData || {},
   });
 });
 
