@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const withPagination = require("sequelize-cursor-pagination");
 module.exports = (sequelize, DataTypes) => {
   class card extends Model {
     /**
@@ -10,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       card.belongsTo(models.project);
+      card.belongsTo(models.user);
     }
   }
   card.init(
@@ -26,5 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "card",
     }
   );
+  const options = {
+    methodName: "paginate",
+    primaryKeyField: "id",
+  };
+
+  withPagination(options)(card);
   return card;
 };

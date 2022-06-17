@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 2000;
 const morgan = require("morgan");
 const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
+const cardRoutes = require("./route/card");
 const { errorHandler } = require("./middleware/errorHandler");
 const syncUserSub = require("./event/consumer/syncUser");
 const log = require("log4js").getLogger("entrypoint");
@@ -17,10 +18,11 @@ app.use(morgan("tiny"));
 app.use(express.json());
 
 // * paginate
-app.use(paginate.middleware(3, 50));
+app.use(paginate.middleware(5, 20));
 
 //  * Routing
 app.use(projectRoutes);
+app.use(cardRoutes);
 
 app.get("/", (res) => {
   res.json({ success: true, message: "Project Service UP!" });

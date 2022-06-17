@@ -1,4 +1,5 @@
 require("pretty-error").start();
+const { Op } = require("sequelize");
 const asyncHandler = require("express-async-handler");
 const _ = require("underscore");
 const User = require("../models").user;
@@ -15,21 +16,37 @@ log.level = "info";
 // @access  Private
 exports.getProjects = asyncHandler(async (req, res, next) => {
   const { search } = req.query;
-  const { role } = req.user.role;
+  const { role, id } = req.user;
   let filter = {};
 
+  if (role == "user") {
+    let projetcIds = [];
+
+    // * get all user projectId
+    const projects = await User_Project.findAll({ where: { userId: id } });
+    for (project of projects) {
+      const { projectId } = project;
+      projetcIds.push(projectId);
+    }
+
+    // * query based on projectId
+    filter.id = { [Op.in]: projetcIds };
+  }
+
   if (search) {
-    let searchOption = { name: { [Op.like]: `%${search}%` } };
+    let searchOption = { title: { [Op.like]: `%${search}%` } };
     filter = _.extend(searchOption, filter);
   }
   const data = await Project.findAndCountAll({
     where: filter,
+    limit: req.query.limit,
     offset: req.skip,
     order: [["createdAt", "DESC"]],
     include: [{ model: User, attributes: ["id", "username", "email"] }],
     attributes: { exclude: ["updatedAt", "deletedAt"] },
   });
 
+  // * offset based pagination
   const pagin = await paginate({
     length: data.count,
     limit: req.query.limit,

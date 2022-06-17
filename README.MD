@@ -13,7 +13,7 @@
 2. Project (mariadb-express) [table:project,card,users]
 
    - create project ✅
-   - get projects (+filter by name & offset based pagination)
+   - get projects (+filter by project title & offset based pagination) ✅
    - get detail project (including card)
    - update project
    - delete project (cascade delete card) ✔️
