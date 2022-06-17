@@ -26,19 +26,13 @@ app.get("/", (res) => {
   res.json({ success: true, message: "Project Service UP!" });
 });
 
-syncUserSub();
-
-//  * SERVER LISTEN
-const server = app.listen(PORT, () => {
-  log.info(`Project service is running on port ${PORT}`);
-});
-
 // * Custom Error Handler
 app.use(errorHandler);
 
-// * Handle unhandled promise rejections
-process.on("unhandledRejection", (err) => {
-  log.error("Error:" + err.message);
-  // Close server & exit process
-  server.close(() => process.exit(1));
+//  * SERVER LISTEN
+app.listen(PORT, () => {
+  log.info(`Project service is running on port ${PORT}`);
 });
+
+// * Event Consume
+syncUserSub();

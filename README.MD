@@ -12,11 +12,11 @@
 
 2. Project (mariadb-express) [table:project,card,users]
 
-   - create project
+   - create project ✅
    - get projects (+filter by name & offset based pagination)
    - get detail project (including card)
    - update project
-   - delete project (cascade delete card)
+   - delete project (cascade delete card) ✔️
    - create card
    - update card
    - delete card
