@@ -37,6 +37,16 @@ exports.createCard = asyncHandler(async (req, res, next) => {
 exports.getCardProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   let { status, startCursor, endCursor } = req.query;
+
+  // * check valid projectId
+  const project = await Project.findOne({
+    where: { id },
+    attibutes: ["title"],
+  });
+  if (!project) {
+    return next(new ErrorResponse("invalid preojectId", 400));
+  }
+
   let filter = { projectId: id };
   if (status) {
     status = JSON.parse(status.toLowerCase());
@@ -73,6 +83,7 @@ exports.getCardProject = asyncHandler(async (req, res, next) => {
     previousPage: data.pageInfo.hasPreviousPage,
     startCursor: data.pageInfo.startCursor,
     endCursor: data.pageInfo.endCursor,
+    project: project.title,
     data: fmtData || [],
   });
 

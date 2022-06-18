@@ -71,7 +71,7 @@ exports.generateAccessToken = (payload) => {
       payload,
       secret,
       {
-        expiresIn: "10m",
+        expiresIn: "60m",
       },
       (err, token) => {
         if (err) {

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       user.hasMany(models.project, { foreignKey: "creatorId" });
       user.belongsToMany(models.project, { through: models.user_project });
       user.hasMany(models.card, { onDelete: "cascade", hooks: true });
+      user.hasMany(models.comment, { onDelete: "cascade", hooks: true });
     }
   }
   user.init(

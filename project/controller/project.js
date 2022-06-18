@@ -7,7 +7,6 @@ const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
 const { ErrorResponse } = require("../middleware/errorHandler");
-const { create, findOne } = require("../service/project");
 const log = require("log4js").getLogger("project");
 log.level = "info";
 
@@ -139,29 +138,21 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  let { title, desc, memberIds } = req.body;
-  const creatorId = Math.ceil(Math.random() * 1000);
-  let fmtmMemberIds = memberIds.concat(",", creatorId);
+  const userId = req.user.id;
+  const { title, description } = req.body;
 
-  const project = await Project.findUnique({
-    where: { id: parseInt(id) },
-  });
-  if (!project) {
-    return res
-      .status(404)
-      .json({ success: false, message: "project not found" });
+  // * check is creator project ?
+  const isCreator = await Project.findOne({ where: { id, creatorId: userId } });
+  if (!isCreator) {
+    return next(new ErrorResponse("forbidden", 400));
   }
-  await Project.update({
-    where: { id: parseInt(id) },
-    data: {
-      title,
-      desc,
-      memberIds: fmtmMemberIds,
-    },
-  });
+
+  // * update
+  await Project.update({ title, description }, { where: { id } });
+
   res.status(200).json({
     success: true,
-    message: "update success",
+    message: "succesfully update",
   });
 });
 

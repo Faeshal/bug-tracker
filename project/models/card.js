@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       card.belongsTo(models.project, { onDelete: "cascade", hooks: true });
       card.belongsTo(models.user);
+      card.hasMany(models.comment, { onDelete: "cascade", hooks: true });
     }
   }
   card.init(
@@ -21,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
+      },
+      comment: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
     },
     {

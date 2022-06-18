@@ -10,18 +10,18 @@
    - get all users (+filter by name & offset based pagination) ✅
    - get detail user ✅
 
-2. Project (mariadb-express) [table:project,card,users]
+2. Project (mariadb-express) [table:project,card,comment,users]
 
    - create project ✅
    - get projects (+filter by project title & offset based pagination) ✅
    - get detail project ✅
-   - update project
+   - update project ✅
    - delete project (cascade delete card) ✅
    - create card ✅
    - update card ✅
    - delete card ✅
    - get cards by projectId (+filter by status & cursor based pagination) ✅
-   - get detail card ✅
+   - get detail card (includig comment) X
 
 3. Comment (mariadb-express) [table:comment,users,card,project]
 
