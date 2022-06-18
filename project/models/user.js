@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       user.hasMany(models.project, { foreignKey: "creatorId" });
       user.belongsToMany(models.project, { through: models.user_project });
-      user.hasMany(models.card);
+      user.hasMany(models.card, { onDelete: "cascade", hooks: true });
     }
   }
   user.init(

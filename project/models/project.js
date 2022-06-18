@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      project.hasMany(models.card);
+      project.hasMany(models.card, { onDelete: "cascade", hooks: true });
       project.belongsTo(models.user, { foreignKey: "creatorId" });
       project.belongsToMany(models.user, { through: models.user_project });
     }

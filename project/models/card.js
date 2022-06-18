@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      card.belongsTo(models.project);
+      card.belongsTo(models.project, { onDelete: "cascade", hooks: true });
       card.belongsTo(models.user);
     }
   }

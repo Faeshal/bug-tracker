@@ -16,4 +16,15 @@ router.get(
   cardController.getCardProject
 );
 
+router.get("/api/v1/projects/cards/:id", protect, cardController.getCard);
+
+router.put("/api/v1/projects/cards/:id", protect, cardController.updateCard);
+
+router.delete(
+  "/api/v1/projects/cards/:id",
+  protect,
+  AuthorizeRole("user"),
+  cardController.deleteCard
+);
+
 module.exports = router;

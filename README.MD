@@ -14,14 +14,14 @@
 
    - create project ✅
    - get projects (+filter by project title & offset based pagination) ✅
-   - get detail project (including card)
+   - get detail project ✅
    - update project
-   - delete project (cascade delete card) ✔️
-   - create card
-   - update card
-   - delete card
-   - get cards by projectId (+filter by status & cursor based pagination)
-   - get detail card
+   - delete project (cascade delete card) ✅
+   - create card ✅
+   - update card ✅
+   - delete card ✅
+   - get cards by projectId (+filter by status & cursor based pagination) ✅
+   - get detail card ✅
 
 3. Comment (mariadb-express) [table:comment,users,card,project]
 
