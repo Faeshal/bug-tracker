@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   card.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
       name: DataTypes.STRING,
       content: DataTypes.STRING,
       status: {

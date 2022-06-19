@@ -5,6 +5,7 @@ const Card = require("../models").card;
 const Project = require("../models").project;
 const _ = require("underscore");
 const { ErrorResponse } = require("../middleware/errorHandler");
+const publisher = require("../event/publisher/index");
 const log = require("log4js").getLogger("card");
 log.level = "info";
 
@@ -19,11 +20,14 @@ exports.createCard = asyncHandler(async (req, res, next) => {
   const result = await Card.create({ name, content, projectId, userId: id });
 
   // * publish event
-  // let project = {
-  //   projectId: result.id,
-  //   projectName: title,
-  // };
-  // await createProject(project);
+  publisher({
+    queueName: "newCard",
+    id: result.id,
+    name,
+    content,
+    projectId,
+    userId: id,
+  });
 
   res.status(201).json({
     success: true,
@@ -133,6 +137,15 @@ exports.updateCard = asyncHandler(async (req, res, next) => {
   // * update
   await Card.update({ name, content, status }, { where: { id } });
 
+  // * publish event
+  publisher({
+    queueName: "updateCard",
+    id,
+    name,
+    content,
+    status,
+  });
+
   res.status(200).json({
     success: true,
     message: "succesfully update",
@@ -154,6 +167,12 @@ exports.deleteCard = asyncHandler(async (req, res, next) => {
 
   // * delete project
   await Card.destroy({ where: { id } });
+
+  // * publish event
+  publisher({
+    queueName: "deleteCard",
+    id,
+  });
 
   res.status(200).json({
     success: true,

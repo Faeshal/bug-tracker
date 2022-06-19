@@ -1,11 +1,11 @@
 require("pretty-error").start();
-const log = require("log4js").getLogger("publisher-syncUser");
+const log = require("log4js").getLogger("publisher");
 log.level = "info";
 const rabbitConn = require("../../util/rabbitConn");
 
-async function syncUserPub(dataObj) {
+async function publisher(dataObj) {
   try {
-    log.info("incoming data obj 📨:", dataObj);
+    const { queueName } = dataObj;
     const msgBuffer = Buffer.from(JSON.stringify(dataObj));
 
     // * Prepare Rabbit Connection & Create Channel
@@ -13,9 +13,9 @@ async function syncUserPub(dataObj) {
     const channel = await connection.createChannel();
 
     // * Push to Queue
-    await channel.assertQueue("syncUser");
-    await channel.sendToQueue("syncUser", msgBuffer);
-    log.info("pushed to rabbit 🐰 ....");
+    await channel.assertQueue(queueName);
+    await channel.sendToQueue(queueName, msgBuffer);
+    log.info("pushed to rabbitMQ 🐰...");
 
     // * Close the connection
     await channel.close();
@@ -26,4 +26,4 @@ async function syncUserPub(dataObj) {
   }
 }
 
-module.exports = syncUserPub;
+module.exports = publisher;

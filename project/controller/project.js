@@ -7,6 +7,7 @@ const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
 const { ErrorResponse } = require("../middleware/errorHandler");
+const publisher = require("../event/publisher/index");
 const log = require("log4js").getLogger("project");
 log.level = "info";
 
@@ -81,14 +82,15 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   for (member of members) {
     await User_Project.create({ userId: member, projectId });
   }
-  log.info("duar error 2");
 
   // * publish event
-  // let project = {
-  //   projectId: result.id,
-  //   projectName: title,
-  // };
-  // await createProject(project);
+  publisher({
+    queueName: "newProject",
+    id: result.id,
+    title,
+    description,
+    creatorId,
+  });
 
   res.status(201).json({
     success: true,
@@ -150,6 +152,14 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
   // * update
   await Project.update({ title, description }, { where: { id } });
 
+  // * publish event
+  publisher({
+    queueName: "updateProject",
+    id,
+    title,
+    description,
+  });
+
   res.status(200).json({
     success: true,
     message: "succesfully update",
@@ -171,6 +181,12 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
 
   // * delete project
   await Project.destroy({ where: { id } });
+
+  // * publish event
+  publisher({
+    queueName: "deleteProject",
+    id,
+  });
 
   res.status(200).json({
     success: true,

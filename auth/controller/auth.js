@@ -10,7 +10,7 @@ const {
   generateRefreshsToken,
   verifyRefreshToken,
 } = require("../middleware/auth");
-const syncUserPub = require("../event/publisher/syncUser");
+const pub = require("../event/publisher/pub");
 const log = require("log4js").getLogger("auth");
 log.level = "info";
 
@@ -47,7 +47,14 @@ exports.register = asyncHandler(async (req, res, next) => {
   const refreshToken = await generateRefreshsToken(payload);
 
   // * Publish Event
-  syncUserPub({ id: result.id, username, email, title, status: result.status });
+  pub({
+    queueName: "newUser",
+    id: result.id,
+    username,
+    email,
+    title,
+    status: result.status,
+  });
 
   res.status(200).cookie("token", accessToken).json({
     success: true,

@@ -7,7 +7,7 @@ const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
 const cardRoutes = require("./route/card");
 const { errorHandler } = require("./middleware/errorHandler");
-const syncUserSub = require("./event/consumer/syncUser");
+const eventConsumer = require("./event/consumer/sub");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -37,4 +37,4 @@ app.listen(PORT, () => {
 });
 
 // * Event Consume
-syncUserSub();
+eventConsumer();

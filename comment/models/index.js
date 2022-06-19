@@ -25,8 +25,8 @@ if (config.use_env_variable) {
 // * Database
 (async () => {
   try {
-    await sequelize.sync();
-    // await sequelize.authenticate();
+    // await sequelize.sync();
+    await sequelize.authenticate();
     // await sequelize.sync({ alter: true });
     log.info("Maria Connected ✳️");
   } catch (error) {
