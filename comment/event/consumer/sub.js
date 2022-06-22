@@ -7,28 +7,31 @@ log.level = "info";
 const rabbitConn = require("../../util/rabbitConn");
 
 async function do_consume() {
-  amqp.connect("amqp://localhost:5672", (err, conn) => {
-    conn.createChannel((err, ch) => {
-      ch.assertExchange("newUser", "fanout", { durable: false });
+  var q = "newUser";
+  let exchange = "user";
 
-      ch.assertQueue("", { exclusive: true }, (err, q) => {
-        log.info(
-          " [*] Waiting for messages in %s. To exit press CTRL+C",
-          q.queue
-        );
+  // * 1. Build Connection
+  const connection = await rabbitConn();
 
-        ch.bindQueue(q.queue, "newUser", "");
+  // * 2. Create Channle
+  const ch = await connection.createChannel();
 
-        ch.consume(
-          q.queue,
-          (msg) => {
-            log.info(" [x] %s", msg.content.toString());
-          },
-          { noAck: false }
-        );
-      });
-    });
+  await ch.assertExchange(exchange, "fanout", {
+    durable: true,
   });
+
+  await ch.assertQueue(q, { durable: true });
+
+  await ch.bindQueue(q, exchange, "");
+
+  await ch.consume(q, function (msg) {
+    log.info("data coming 🎉:");
+    ch.ack(msg);
+  });
+  setTimeout(function () {
+    ch.close();
+    connection.close();
+  }, 500);
 }
 
 module.exports = do_consume;

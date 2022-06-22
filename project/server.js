@@ -7,7 +7,8 @@ const paginate = require("express-paginate");
 const projectRoutes = require("./route/project");
 const cardRoutes = require("./route/card");
 const { errorHandler } = require("./middleware/errorHandler");
-const eventConsumer = require("./event/consumer/sub");
+// const eventConsumer = require("./event/consumer/sub");
+const redisSub = require("./redismq/sub");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -37,4 +38,5 @@ app.listen(PORT, () => {
 });
 
 // * Event Consume
-eventConsumer();
+// eventConsumer();
+redisSub();

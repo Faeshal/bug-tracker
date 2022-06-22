@@ -6,7 +6,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const commentRoutes = require("./route/comment");
 const { errorHandler } = require("./middleware/errorHandler");
-const eventConsumer = require("./event/consumer/sub");
+// const eventConsumer = require("./event/consumer/sub");
+const redisSub = require("./redismq/sub");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -35,4 +36,5 @@ app.listen(PORT, () => {
 });
 
 // * Event Consume
-eventConsumer();
+// eventConsumer();
+redisSub();

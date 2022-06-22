@@ -11,6 +11,7 @@ const {
   verifyRefreshToken,
 } = require("../middleware/auth");
 const pub = require("../event/publisher/pub");
+const redisPub = require("../redismq/pub");
 const log = require("log4js").getLogger("auth");
 log.level = "info";
 
@@ -47,7 +48,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   const refreshToken = await generateRefreshsToken(payload);
 
   // * Publish Event
-  pub({
+  redisPub({
     queueName: "newUser",
     id: result.id,
     username,
