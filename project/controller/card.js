@@ -5,7 +5,7 @@ const Card = require("../models").card;
 const Project = require("../models").project;
 const _ = require("underscore");
 const { ErrorResponse } = require("../middleware/errorHandler");
-const publisher = require("../event/publisher/index");
+// const publisher = require("../event/publisher/index");
 const log = require("log4js").getLogger("card");
 log.level = "info";
 
@@ -20,14 +20,14 @@ exports.createCard = asyncHandler(async (req, res, next) => {
   const result = await Card.create({ name, content, projectId, userId: id });
 
   // * publish event
-  publisher({
-    queueName: "newCard",
-    id: result.id,
-    name,
-    content,
-    projectId,
-    userId: id,
-  });
+  // publisher({
+  //   queueName: "newCard",
+  //   id: result.id,
+  //   name,
+  //   content,
+  //   projectId,
+  //   userId: id,
+  // });
 
   res.status(201).json({
     success: true,

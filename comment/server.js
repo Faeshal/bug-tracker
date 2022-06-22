@@ -6,8 +6,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const commentRoutes = require("./route/comment");
 const { errorHandler } = require("./middleware/errorHandler");
-// const eventConsumer = require("./event/consumer/sub");
-const redisSub = require("./redismq/sub");
+const consumer = require("./event/consumer");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -35,6 +34,5 @@ app.listen(PORT, () => {
   log.info(`Comment service is running on port ${PORT}`);
 });
 
-// * Event Consume
-// eventConsumer();
-redisSub();
+// * Event Consumer
+consumer();

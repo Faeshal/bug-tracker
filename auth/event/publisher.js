@@ -1,12 +1,13 @@
 require("pretty-error").start();
-const log = require("log4js").getLogger("publisher");
-log.level = "info";
 const Redis = require("ioredis");
 const redis = new Redis();
+const log = require("log4js").getLogger("publisher");
+log.level = "info";
 
-async function redisPub(dataObj) {
+async function publish(dataObj) {
+  const { streamName } = dataObj;
   await redis.xadd(
-    "userStream", // stream name
+    streamName, // stream name
     "*", // means redis give incremental data id
     "data", // key
     JSON.stringify(dataObj) // value
@@ -14,4 +15,4 @@ async function redisPub(dataObj) {
   log.info("sent ✈️", dataObj);
 }
 
-module.exports = redisPub;
+module.exports = publish;

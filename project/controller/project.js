@@ -7,7 +7,7 @@ const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
 const { ErrorResponse } = require("../middleware/errorHandler");
-const publisher = require("../event/publisher/index");
+// const publisher = require("../event/publisher/index");
 const log = require("log4js").getLogger("project");
 log.level = "info";
 
@@ -84,13 +84,13 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   }
 
   // * publish event
-  publisher({
-    queueName: "newProject",
-    id: result.id,
-    title,
-    description,
-    creatorId,
-  });
+  // publisher({
+  //   queueName: "newProject",
+  //   id: result.id,
+  //   title,
+  //   description,
+  //   creatorId,
+  // });
 
   res.status(201).json({
     success: true,
