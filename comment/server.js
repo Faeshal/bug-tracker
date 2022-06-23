@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const commentRoutes = require("./route/comment");
 const { errorHandler } = require("./middleware/errorHandler");
-const { newUserConsumer, newProjectConsumer } = require("./event/consumer");
+const eventConsumer = require("./event/consumer");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -35,5 +35,4 @@ app.listen(PORT, () => {
 });
 
 // * Event Consumer
-newUserConsumer();
-// newProjectConsumer();
+eventConsumer();
