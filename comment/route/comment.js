@@ -10,4 +10,11 @@ router.post(
   commentController.createComment
 );
 
+router.get(
+  "/api/v1/comments/cards/:id",
+  protect,
+  AuthorizeRole("user"),
+  commentController.getCommentByCardId
+);
+
 module.exports = router;

@@ -25,10 +25,9 @@
 
 3. Comment (mariadb-express) [table:comment,users,card,project]
 
-   - create comment
+   - create comment ✅
    - get comments by cardId (cursor based pagination)
    - get detail comments
-   - update comment
    - delete comment
 
 4. Notif (MongoDB-express) [collections: notif ]
@@ -41,7 +40,7 @@
 
    ### Publish :
 
-   A. syncUser
+   A. newUser
 
    ### Consume :
 
@@ -51,8 +50,22 @@
 
    #### Publish :
 
-   A. x
+   A. newProject
+   B. newCard
 
    #### Consume :
 
-   A. syncUser
+   A. newUser
+   B. newComment
+
+3. Card:
+
+   #### Publish :
+
+   A. newComment
+
+   #### Consume :
+
+   A. newUser
+   B. newProject
+   c. newCard

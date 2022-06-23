@@ -1,5 +1,7 @@
 require("pretty-error").start();
 const User = require("../models").user;
+const Card = require("../models").card;
+const Comment = require("../models").comment;
 const _ = require("underscore");
 const log = require("log4js").getLogger("sub-redis");
 log.level = "info";
@@ -18,11 +20,34 @@ const newUserProcess = async (message) => {
   log.info("set cache userId 💾:", setId);
 
   // * business logic
-  let userObj = _.omit(rawObj, "stream");
-  const user = await User.findOne({ where: { id: userObj.id } });
+  let finalObj = _.omit(rawObj, "stream");
+  const user = await User.findOne({ where: { id: finalObj.id } });
   if (!user) {
-    await User.create(userObj);
+    await User.create(finalObj);
   }
+};
+
+const newCommentProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_newcomment_projectservice", key);
+  log.info("set cache newComment 💾:", setId);
+
+  // * business logic
+  let finalObj = _.omit(rawObj, "stream", "totalComment");
+  const comment = await Comment.findOne({ where: { id: finalObj.id } });
+  if (!comment) {
+    await Comment.create(finalObj);
+  }
+
+  await Card.update(
+    { comment: rawObj.totalComment },
+    { where: { id: finalObj.cardId } }
+  );
 };
 
 // * Stream Consumer
@@ -37,13 +62,35 @@ async function eventConsumer() {
   }
   log.info("newUser lastId:", newUserId);
 
+  // * newComment stream
+  let newCommentId;
+  const cacheCommentId = await redis.get("id_newcomment_projectservice");
+  if (cacheCommentId == null) {
+    newCommentId = "0";
+  } else {
+    newCommentId = cacheCommentId;
+  }
+  log.info("newComment lastId:", newCommentId);
+
   // * Listen Stream
-  const result = await redis.xread("block", 0, "STREAMS", "newUser", newUserId);
+  const result = await redis.xread(
+    "block",
+    0,
+    "STREAMS",
+    "newUser",
+    "newComment",
+    newUserId,
+    newCommentId
+  );
 
   const [key, messages] = result[0]; // key = nama streamnya
 
   if (key == "newUser") {
     messages.forEach(newUserProcess);
+  }
+
+  if (key == "newComment") {
+    messages.forEach(newCommentProcess);
   }
 
   // Pass the last id of the results to the next round.

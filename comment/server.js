@@ -11,7 +11,7 @@ const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
 // * Security
-app.use(helmet);
+app.use(helmet());
 
 // * logger
 app.use(morgan("tiny"));
