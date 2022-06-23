@@ -48,7 +48,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   // * Publish Event
   publish({
-    streamName: "newUser",
+    stream: "newUser",
     id: result.id,
     username,
     email,

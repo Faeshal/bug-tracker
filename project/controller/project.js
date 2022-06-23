@@ -7,7 +7,7 @@ const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
 const { ErrorResponse } = require("../middleware/errorHandler");
-// const publisher = require("../event/publisher/index");
+const publish = require("../event/publisher");
 const log = require("log4js").getLogger("project");
 log.level = "info";
 
@@ -77,20 +77,19 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 
   // * save user_project (pivot table)
   const projectId = result.id;
-  log.info("duar error 1");
   members.push(creatorId);
   for (member of members) {
     await User_Project.create({ userId: member, projectId });
   }
 
   // * publish event
-  // publisher({
-  //   queueName: "newProject",
-  //   id: result.id,
-  //   title,
-  //   description,
-  //   creatorId,
-  // });
+  publish({
+    stream: "newProject",
+    id: result.id,
+    title,
+    description,
+    creatorId,
+  });
 
   res.status(201).json({
     success: true,

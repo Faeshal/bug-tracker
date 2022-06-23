@@ -6,6 +6,7 @@ log.level = "info";
 
 async function publish(dataObj) {
   const { stream } = dataObj;
+  log.info("nama stream", stream);
   await redis.xadd(
     stream, // stream name
     "*", // means redis give incremental data id

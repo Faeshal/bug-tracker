@@ -17,7 +17,7 @@ const newUserProcess = async (message) => {
   log.info("set cacheId 💾:", setId);
 
   // * business logic
-  let userObj = _.omit(rawObj, "streamName");
+  let userObj = _.omit(rawObj, "stream");
   const user = await User.findOne({ where: { id: userObj.id } });
   if (!user) {
     await User.create(userObj);
