@@ -90,13 +90,6 @@ exports.getCardProject = asyncHandler(async (req, res, next) => {
     project: project.title,
     data: fmtData || [],
   });
-
-  // * publish event
-  // let project = {
-  //   projectId: result.id,
-  //   projectName: title,
-  // };
-  // await createProject(project);
 });
 
 // * @route GET /api/v1/projects/cards/:id

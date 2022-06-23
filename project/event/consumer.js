@@ -50,6 +50,24 @@ const newCommentProcess = async (message) => {
   );
 };
 
+const deleteCommentProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_deletecomment_projectservice", key);
+  log.info("set cache deleteComment 💾:", setId);
+
+  // * business logic
+  await Comment.destroy({ where: { id: rawObj.id } });
+  await Card.update(
+    { comment: rawObj.totalComment },
+    { where: { id: rawObj.cardId } }
+  );
+};
+
 // * Stream Consumer
 async function eventConsumer() {
   // * newUser stream
@@ -72,6 +90,16 @@ async function eventConsumer() {
   }
   log.info("newComment lastId:", newCommentId);
 
+  // * deleteComment stream
+  let delCommentId;
+  const cacheDelCommentId = await redis.get("id_deletecomment_projectservice");
+  if (cacheDelCommentId == null) {
+    delCommentId = "0";
+  } else {
+    delCommentId = cacheDelCommentId;
+  }
+  log.info("deleteComment lastId:", delCommentId);
+
   // * Listen Stream
   const result = await redis.xread(
     "block",
@@ -79,8 +107,10 @@ async function eventConsumer() {
     "STREAMS",
     "newUser",
     "newComment",
+    "deleteComment",
     newUserId,
-    newCommentId
+    newCommentId,
+    delCommentId
   );
 
   const [key, messages] = result[0]; // key = nama streamnya
@@ -91,6 +121,10 @@ async function eventConsumer() {
 
   if (key == "newComment") {
     messages.forEach(newCommentProcess);
+  }
+
+  if (key == "deleteComment") {
+    messages.forEach(deleteCommentProcess);
   }
 
   // Pass the last id of the results to the next round.

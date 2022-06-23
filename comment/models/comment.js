@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const withPagination = require("sequelize-cursor-pagination");
 module.exports = (sequelize, DataTypes) => {
   class comment extends Model {
     /**
@@ -22,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "comment",
     }
   );
+
+  const options = {
+    methodName: "paginate",
+    primaryKeyField: "id",
+  };
+  withPagination(options)(comment);
 
   return comment;
 };

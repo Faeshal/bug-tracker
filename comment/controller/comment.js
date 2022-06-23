@@ -2,6 +2,7 @@ require("pretty-error").start();
 const asyncHandler = require("express-async-handler");
 const Card = require("../models").card;
 const Comment = require("../models").comment;
+const User = require("../models").user;
 const _ = require("underscore");
 const { ErrorResponse } = require("../middleware/errorHandler");
 const publish = require("../event/publisher");
@@ -34,7 +35,7 @@ exports.createComment = asyncHandler(async (req, res, next) => {
     stream: "newComment",
     id: result.id,
     userId: id,
-    cardId,
+    cardId: parseInt(cardId),
     content,
     totalComment,
   });
@@ -49,10 +50,116 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 // @desc    get comment by card id
 // @access  Private[user]
 exports.getCommentByCardId = asyncHandler(async (req, res, next) => {
+  const { startCursor, endCursor, limit } = req.query;
   let { id } = req.params;
-  const data = await Comment.findAll({ where: { cardId: id } });
-  res.status(201).json({
+
+  // * Main Query
+  let queryObj = {
+    where: { cardId: id },
+    limit: parseInt(limit) || 20,
+    after: endCursor,
+    order: [["id", "DESC"]],
+    include: { model: User, attributes: ["username"] },
+  };
+  if (startCursor) {
+    _.omit(queryObj, "after");
+    _.extend(queryObj, { before: startCursor });
+  }
+
+  let data = await Comment.paginate(queryObj);
+  const dataArr = data.edges;
+
+  // * Formating Data
+  let fmtData = _.map(dataArr, (obj) => {
+    const finalData = _.extend(obj.node, { cursor: obj.cursor });
+    return finalData;
+  });
+
+  // * grab card info
+  const card = await Card.findOne({
+    where: { id },
+    attributes: ["name"],
+  });
+
+  res.status(200).json({
     success: true,
-    data,
+    totalData: data.totalCount,
+    limitPerPage: parseInt(limit),
+    nextPage: data.pageInfo.hasNextPage,
+    previousPage: data.pageInfo.hasPreviousPage,
+    startCursor: data.pageInfo.startCursor,
+    endCursor: data.pageInfo.endCursor,
+    card: card.name,
+    data: fmtData || [],
+  });
+});
+
+// * @route DELETE /api/v1/comments/:id
+// @desc    delete comment by id
+// @access  Private[user]
+exports.deleteComment = asyncHandler(async (req, res, next) => {
+  let { id } = req.params;
+  const userId = req.user.id;
+
+  // * check valid comment
+  const comment = await Comment.findOne({
+    where: { id },
+    include: [{ model: Card, attributes: ["comment"] }],
+  });
+  if (!comment) {
+    return next(new ErrorResponse("invalid commentId", 400));
+  }
+
+  // * Security check
+  if (comment.userId !== userId) {
+    return next(new ErrorResponse("forbidden", 403));
+  }
+
+  // * delete comment
+  await Comment.destroy({ where: { id } });
+
+  // * update counting comment in card
+  let currentComment = comment.card.comment;
+  let totalComment = --currentComment;
+  await Card.update(
+    { comment: totalComment },
+    { where: { id: comment.cardId } }
+  );
+
+  // * publish comment
+  publish({
+    stream: "deleteComment",
+    id: parseInt(id),
+    cardId: comment.cardId,
+    totalComment,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "succesfully delete",
+  });
+});
+
+// * @route GET /api/v1/comments/cards/:id
+// @desc    get detail comment by card id
+// @access  Private[user]
+exports.getComment = asyncHandler(async (req, res, next) => {
+  let { id } = req.params;
+  const data = await Comment.findOne({
+    where: { id },
+    include: [
+      {
+        model: Card,
+        attributes: {
+          exclude: ["id", "cardId", "userId", "projectId", "updatedAt"],
+        },
+      },
+      { model: User, attributes: ["username", "title"] },
+    ],
+    attributes: { exclude: ["updatedAt"] },
+  });
+  res.status(200).json({
+    success: true,
+    data: data || {},
   });
 });

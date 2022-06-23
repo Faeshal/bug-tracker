@@ -17,4 +17,17 @@ router.get(
   commentController.getCommentByCardId
 );
 
+router.delete(
+  "/api/v1/comments/:id",
+  protect,
+  AuthorizeRole("user"),
+  commentController.deleteComment
+);
+
+router.get(
+  "/api/v1/comments/:id",
+  protect,
+  AuthorizeRole("user"),
+  commentController.getComment
+);
 module.exports = router;

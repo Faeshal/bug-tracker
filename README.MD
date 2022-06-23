@@ -21,14 +21,14 @@
    - update card ✅
    - delete card ✅
    - get cards by projectId (+filter by status & cursor based pagination) ✅
-   - get detail card (includig comment) X
+   - get detail card ✅
 
 3. Comment (mariadb-express) [table:comment,users,card,project]
 
-   - create comment ✅
-   - get comments by cardId (cursor based pagination)
-   - get detail comments
-   - delete comment
+   - create comment (when comment create, totalComment in card must be update too) ✅
+   - get comments by cardId (cursor based pagination) ✅
+   - get detail comments ✅
+   - delete comment ✅
 
 4. Notif (MongoDB-express) [collections: notif ]
 
@@ -44,7 +44,7 @@
 
    ### Consume :
 
-   A.
+   -
 
 2. Project:
 
@@ -57,15 +57,31 @@
 
    A. newUser
    B. newComment
+   C. deleteComment
 
-3. Card:
+3. Comment:
 
    #### Publish :
 
    A. newComment
+   B. deleteComment
 
    #### Consume :
 
    A. newUser
    B. newProject
    c. newCard
+
+4. Notif:
+
+   #### Publish :
+
+   -
+
+   #### Consume :
+
+   A. newUser
+   B. newProject
+   c. newCard
+   d. newComment
+   e. deleteProject
