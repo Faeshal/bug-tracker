@@ -34,6 +34,15 @@
 
    - get notifications by userId (search by content, filter by type, cursor based pagination )
 
+   type:
+
+   - regis
+   - create project
+   - delete project
+   - create card
+   - change status card
+   - create commet
+
 ## List Of Event
 
 1. Auth:
@@ -41,6 +50,7 @@
    ### Publish :
 
    A. newUser
+   B. newNotif
 
    ### Consume :
 
@@ -54,6 +64,7 @@
    B. newCard
    C. deleteProject
    D. updateCardStatus
+   E. newNotif
 
    #### Consume :
 
@@ -67,6 +78,7 @@
 
    A. newComment
    B. deleteComment
+   C. newNotif
 
    #### Consume :
 
@@ -84,9 +96,4 @@
 
    #### Consume :
 
-   A. newUser
-   B. newProject
-   c. newCard
-   d. updateCardStatus
-   e. newComment
-   f. deleteProject
+   A. newNotif

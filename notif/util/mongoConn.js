@@ -6,8 +6,6 @@ log.level = "info";
 const connectDB = async () => {
   const conn = await mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
     useUnifiedTopology: true,
   });
   log.info("MongoDB UP 🍀 ", conn.connection.host);

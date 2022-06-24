@@ -36,6 +36,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   // * define payload
   let payload = {
     id: result.id,
+    username: result.username,
     email: result.email,
     role: result.role,
   };
@@ -54,6 +55,15 @@ exports.register = asyncHandler(async (req, res, next) => {
     email,
     title,
     status: result.status,
+  });
+
+  publish({
+    stream: "newNotif",
+    fromUserId: result.id,
+    targetUserId: result.id,
+    type: "welcome aboard",
+    content: `hello ${username} 👋, welcome to BugTracker 😎`,
+    createdAt: new Date().toLocaleDateString(),
   });
 
   res.status(200).cookie("token", accessToken).json({
@@ -94,9 +104,9 @@ exports.login = asyncHandler(async (req, res, next) => {
   // * define payload
   let payload = {
     id: data.id,
+    username: data.username,
     email: data.email,
     role: data.role,
-    scope: data.scope,
   };
 
   // * generate Access token

@@ -70,6 +70,7 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
 exports.createProject = asyncHandler(async (req, res, next) => {
   var { title, description, members } = req.body;
   const creatorId = req.user.id;
+  const { username } = req.user;
   log.info("user:", req.user);
 
   // * save to project
@@ -90,6 +91,17 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     description,
     creatorId,
   });
+
+  for (member of members) {
+    publish({
+      stream: "newNotif",
+      fromUserId: creatorId,
+      targetUserId: member,
+      type: "new project created",
+      content: `🌟 you are join to a new project ${title} created by ${username}`,
+      createdAt: new Date().toLocaleDateString(),
+    });
+  }
 
   res.status(201).json({
     success: true,
@@ -171,6 +183,7 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
 exports.deleteProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user.id;
+  const { username } = req.user;
 
   // * check is creator project ?
   const isCreator = await Project.findOne({ where: { id, creatorId: userId } });
@@ -188,6 +201,25 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
     title: isCreator.title,
     creatorId: parseInt(userId),
   });
+
+  const members = await User_Project.findAll({
+    where: { projectId: parseInt(id) },
+  });
+  let userIds = [];
+  for (member of members) {
+    userIds.push(member.userId);
+  }
+
+  for (userId of userIds) {
+    publish({
+      stream: "newNotif",
+      fromUserId: id,
+      targetUserId: userId,
+      type: "project deleted",
+      content: `😥 ${username} delete ${isCreator.title} project`,
+      createdAt: new Date().toLocaleDateString(),
+    });
+  }
 
   res.status(200).json({
     success: true,

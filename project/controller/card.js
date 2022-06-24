@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models").user;
 const Card = require("../models").card;
 const Project = require("../models").project;
+const User_Project = require("../models").user_project;
 const _ = require("underscore");
 const { ErrorResponse } = require("../middleware/errorHandler");
 const publish = require("../event/publisher");
@@ -14,7 +15,13 @@ log.level = "info";
 // @access  Private[user]
 exports.createCard = asyncHandler(async (req, res, next) => {
   var { name, content, projectId } = req.body;
-  const { id } = req.user;
+  const { id, username } = req.user;
+
+  // * check valid projectId
+  const project = await Project.findOne({ where: { id: parseInt(projectId) } });
+  if (!project) {
+    return next(new ErrorResponse("invalid preojectId", 400));
+  }
 
   // * save to card
   const result = await Card.create({ name, content, projectId, userId: id });
@@ -28,6 +35,25 @@ exports.createCard = asyncHandler(async (req, res, next) => {
     projectId,
     userId: id,
   });
+
+  const members = await User_Project.findAll({
+    where: { projectId: parseInt(projectId) },
+  });
+  let userIds = [];
+  for (member of members) {
+    userIds.push(member.userId);
+  }
+
+  for (userId of userIds) {
+    publish({
+      stream: "newNotif",
+      fromUserId: id,
+      targetUserId: userId,
+      type: "new card",
+      content: `📋 ${username} add card ${name} to project ${project.title}`,
+      createdAt: new Date().toLocaleDateString(),
+    });
+  }
 
   res.status(201).json({
     success: true,

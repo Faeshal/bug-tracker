@@ -14,7 +14,7 @@ log.level = "info";
 // @access  Private[user]
 exports.createComment = asyncHandler(async (req, res, next) => {
   let { content, cardId } = req.body;
-  const { id } = req.user;
+  const { id, username } = req.user;
 
   // * check valid cardId
   const card = await Card.findOne({ where: { id: cardId } });
@@ -39,6 +39,25 @@ exports.createComment = asyncHandler(async (req, res, next) => {
     content,
     totalComment,
   });
+
+  // all people that "involved" in the card, get notif
+  let users = await Comment.findAll({ where: { cardId: parseInt(cardId) } });
+  let userIds = [];
+  for (user of users) {
+    userIds.push(user.userId);
+  }
+  userIds = _.uniq(userIds);
+
+  for (userId of userIds) {
+    publish({
+      stream: "newNotif",
+      fromUserId: id,
+      targetUserId: userId,
+      type: "new comment",
+      content: `📢 ${username} comment in card ${card.name}`,
+      createdAt: new Date().toLocaleDateString(),
+    });
+  }
 
   res.status(201).json({
     success: true,

@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const notifRoutes = require("./route/notif");
 const { errorHandler } = require("./middleware/errorHandler");
+const mongoConn = require("../notif/util/mongoConn");
+const eventConsumer = require("./event/consumer");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
 
@@ -28,10 +30,13 @@ app.get("/", (res) => {
 // * Custom Error Handler
 app.use(errorHandler);
 
+// * DB Conn
+mongoConn();
+
 //  * SERVER LISTEN
 app.listen(PORT, () => {
   log.info(`Notif service is running on port ${PORT}`);
 });
 
 // * consumer
-// createProject();
+eventConsumer();

@@ -6,9 +6,10 @@ const _ = require("underscore");
 log.level = "info";
 
 // * @route GET /api/v1/notifications
-// @desc    get notifications
+// @desc    get notifications by current userId
 // @access  Private[admin,user]
-exports.getNotifications = asyncHandler(async (req, res, next) => {
+exports.getNotifByUserId = asyncHandler(async (req, res, next) => {
+  const { id } = req.user;
   const data = await Notif.find({});
   res.status(200).json({
     success: true,
