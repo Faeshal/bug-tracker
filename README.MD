@@ -1,4 +1,4 @@
-## List Of Services (sprint planning)
+## List Of Services
 
 1. Auth (postgree-express) [table:users]
 
@@ -34,9 +34,9 @@
 
    - get notifications by userId (search by content, filter by type, cursor based pagination )
 
-   type:
+   type notification:
 
-   - regis
+   - registration
    - create project
    - delete project
    - create card
@@ -49,8 +49,8 @@
 
    ### Publish :
 
-   A. newUser
-   B. newNotif
+   - newUser
+   - newNotif
 
    ### Consume :
 
@@ -60,33 +60,33 @@
 
    #### Publish :
 
-   A. newProject
-   B. newCard
-   C. deleteProject
-   D. updateCardStatus
-   E. newNotif
+   - newProject
+   - newCard
+   - deleteProject
+   - updateCardStatus
+   - newNotif
 
    #### Consume :
 
-   A. newUser
-   B. newComment
-   C. deleteComment
+   - newUser
+   - newComment
+   - deleteComment
 
 3. Comment:
 
    #### Publish :
 
-   A. newComment
-   B. deleteComment
-   C. newNotif
+   - newComment
+   - deleteComment
+   - newNotif
 
    #### Consume :
 
-   A. newUser
-   B. newProject
-   c. newCard
-   d. deleteProject
-   e. updateCardStatus
+   - newUser
+   - newProject
+   - newCard
+   - deleteProject
+   - updateCardStatus
 
 4. Notif:
 
@@ -96,4 +96,26 @@
 
    #### Consume :
 
-   A. newNotif
+   - newNotif
+
+## complementary thing
+
+- setup krakend api gateway
+- clean up postman documentation
+- add good readme repository documentation
+
+## what's missing ? (reason: dont have free time to add it)
+
+- better error handling
+- query validation
+- body json validation
+
+## improvement that can be done
+
+- user management feature, ex: forgot password, change password, advance permission etc.. (don't have much time to add this feature 🙏)
+- add security package (hpp,helmet,csrf etc)
+- can add better message broker for advance event manager, ex: kafka
+- if still wanna using redis stream, please setup consumer group to each services for better load balancing
+- setup better event data store scenario, ex: if more than 90 days, store event to file not just in memory
+- write unit & integration test
+- add docker & kubernetes (if you have a lot of free time 🤣)
