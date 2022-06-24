@@ -30,9 +30,9 @@
    - get detail comments ✅
    - delete comment ✅
 
-4. Notif (MongoDB-express) [collections: notif ]
+4. Notif (MongoDB-express) [collections: notif,users ]
 
-   - gets notifications (search by title, filter by type, cursor based pagination )
+   - get notifications by userId (search by content, filter by type, cursor based pagination )
 
 ## List Of Event
 
@@ -52,6 +52,8 @@
 
    A. newProject
    B. newCard
+   C. deleteProject
+   D. updateCardStatus
 
    #### Consume :
 
@@ -71,6 +73,8 @@
    A. newUser
    B. newProject
    c. newCard
+   d. deleteProject
+   e. updateCardStatus
 
 4. Notif:
 
@@ -83,5 +87,6 @@
    A. newUser
    B. newProject
    c. newCard
-   d. newComment
-   e. deleteProject
+   d. updateCardStatus
+   e. newComment
+   f. deleteProject

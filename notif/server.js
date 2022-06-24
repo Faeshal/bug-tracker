@@ -3,11 +3,14 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 4000;
 const morgan = require("morgan");
+const helmet = require("helmet");
 const notifRoutes = require("./route/notif");
+const { errorHandler } = require("./middleware/errorHandler");
 const log = require("log4js").getLogger("entrypoint");
 log.level = "info";
-const createProject = require("./consumer/createProject");
-const { errorHandler } = require("./middleware/errorHandler");
+
+// * Security
+app.use(helmet());
 
 // * logger
 app.use(morgan("tiny"));

@@ -1,0 +1,158 @@
+require("pretty-error").start();
+const User = require("../models").user;
+const Project = require("../models").project;
+const Card = require("../models").card;
+const _ = require("underscore");
+const log = require("log4js").getLogger("sub-redis");
+log.level = "info";
+const Redis = require("ioredis");
+const redis = new Redis();
+
+// * Processor / Job
+const newUserProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_newuser_nontifservice", key);
+  log.info("set cache userId 💾:", setId);
+
+  // * business logic
+};
+
+const newProjectProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_newproject_notifservice", key);
+  log.info("set cache projectId 💾:", setId);
+
+  // * business logic
+};
+
+const newCardProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_newcard_notifservice", key);
+  log.info("set cache cardId 💾:", setId);
+
+  // * business logic
+  let finalObj = _.omit(rawObj, "stream");
+  const card = await Card.findOne({ where: { id: finalObj.id } });
+  if (!card) {
+    await Card.create(finalObj);
+  }
+};
+
+const cardStatusProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_cardstatus_notifservice", key);
+  log.info("set cache cardId 💾:", setId);
+
+  // * business logic
+};
+
+const deleteProjectProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_deleteproject_notifservice", key);
+  log.info("set cache cardId 💾:", setId);
+
+  // * business logic
+};
+
+const newCommentProcess = async (message) => {
+  const key = message[0];
+  const rawArr = message[1];
+  const rawObj = JSON.parse(rawArr[1]);
+  log.info("incoming data 📩:", rawObj);
+
+  // * Set cache Last Stream Id
+  const setId = await redis.set("id_deleteproject_notifservice", key);
+  log.info("set cache cardId 💾:", setId);
+
+  // * business logic
+};
+
+// * Stream Consumer
+async function eventConsumer() {
+  // * newUser stream
+  let newUserId;
+  const cacheNewUserId = await redis.get("id_newuser_notifservice");
+  if (cacheNewUserId == null) {
+    newUserId = "0";
+  } else {
+    newUserId = cacheNewUserId;
+  }
+  log.info("newUser lastId:", newUserId);
+
+  // * newProject stream
+  let newProjectId;
+  const cacheNewProjectId = await redis.get("id_newproject_notifservice");
+  if (cacheNewProjectId == null) {
+    newProjectId = "0";
+  } else {
+    newProjectId = cacheNewProjectId;
+  }
+  log.info("newProject lastId:", newProjectId);
+
+  // * newCard stream
+  let newCardId;
+  const cacheNewCardId = await redis.get("id_newcard_notifservice");
+  if (cacheNewCardId == null) {
+    newCardId = "0";
+  } else {
+    newCardId = cacheNewCardId;
+  }
+  log.info("newCard lastId:", newCardId);
+
+  // * Listen Stream
+  const result = await redis.xread(
+    "block",
+    0,
+    "STREAMS",
+    "newUser",
+    "newProject",
+    "newCard",
+    newUserId,
+    newProjectId,
+    newCardId
+  );
+
+  const [key, messages] = result[0]; // key = nama streamnya
+
+  if (key == "newUser") {
+    messages.forEach(newUserProcess);
+  }
+
+  if (key == "newProject") {
+    messages.forEach(newProjectProcess);
+  }
+
+  if (key == "newCard") {
+    messages.forEach(newCardProcess);
+  }
+
+  // Pass the last id of the results to the next round.
+  await eventConsumer(messages[messages.length - 1][0]);
+}
+
+module.exports = eventConsumer;

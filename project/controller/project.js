@@ -182,9 +182,11 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
   await Project.destroy({ where: { id } });
 
   // * publish event
-  publisher({
-    queueName: "deleteProject",
-    id,
+  publish({
+    stream: "deleteProject",
+    id: parseInt(id),
+    title: isCreator.title,
+    creatorId: parseInt(userId),
   });
 
   res.status(200).json({

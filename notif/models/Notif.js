@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const NotifSchema = new mongoose.Schema({
-  targetUserId: Number,
+  userIds: Array,
   type: String,
   content: String,
 });
