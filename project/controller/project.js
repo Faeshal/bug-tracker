@@ -71,7 +71,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   var { title, description, members } = req.body;
   const creatorId = req.user.id;
   const { username } = req.user;
-  log.info("user:", req.user);
+  members = _.unique(members);
 
   // * save to project
   const result = await Project.create({ title, description, creatorId });
