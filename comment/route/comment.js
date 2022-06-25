@@ -30,4 +30,5 @@ router.get(
   AuthorizeRole("user"),
   commentController.getComment
 );
+
 module.exports = router;

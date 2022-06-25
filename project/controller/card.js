@@ -145,7 +145,7 @@ exports.getCard = asyncHandler(async (req, res, next) => {
 exports.updateCard = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user.id;
-  const { name, content, status } = req.body;
+  const { name, content } = req.body;
 
   // * check is creator project ?
   const isCreator = await Card.findOne({ where: { id, userId } });
@@ -154,15 +154,14 @@ exports.updateCard = asyncHandler(async (req, res, next) => {
   }
 
   // * update
-  await Card.update({ name, content, status }, { where: { id } });
+  await Card.update({ name, content }, { where: { id } });
 
   // * publish event
-  publisher({
+  publish({
     queueName: "updateCard",
     id,
     name,
     content,
-    status,
   });
 
   res.status(200).json({
@@ -196,5 +195,64 @@ exports.deleteCard = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "successfully delete",
+  });
+});
+
+// * @route PATCH /api/v1/projects/cards/:id
+// @desc    change card status
+// @access  Private[user]
+exports.changeCardStatus = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const { username } = req.user;
+  const currentUserId = req.user.id;
+
+  // * check valid cardId
+  const card = await Card.findOne({ where: { id: parseInt(id) } });
+  if (!card) {
+    return next(new ErrorResponse("invalid cardId", 400));
+  }
+
+  // * check valid creator
+  if (card.userId !== id) {
+    return next(new ErrorResponse("forbidden", 403));
+  }
+
+  // * update card status
+  const result = await Card.uppdate(
+    { status },
+    { wherer: { id: parseInt(id) } }
+  );
+
+  // * publish event
+  publish({
+    stream: "changeCardStatus",
+    id: parseInt(id),
+    status,
+    userId: currentUserId,
+  });
+
+  const members = await User_Project.findAll({
+    where: { projectId: parseInt(card.projectId) },
+  });
+  let userIds = [];
+  for (member of members) {
+    userIds.push(member.userId);
+  }
+
+  for (userId of userIds) {
+    publish({
+      stream: "newNotif",
+      fromUserId: currentUserId,
+      targetUserId: userId,
+      type: "new card",
+      content: `📋 ${username} change status of card ${card.name} to ${status}`,
+      createdAt: new Date().toLocaleDateString(),
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    data: result,
   });
 });

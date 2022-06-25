@@ -27,4 +27,10 @@ router.delete(
   cardController.deleteCard
 );
 
+router.patch(
+  "/api/v1/projects/cards/:id",
+  protect,
+  AuthorizeRole("user"),
+  cardController.changeCardStatus
+);
 module.exports = router;

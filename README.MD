@@ -63,7 +63,8 @@
    - newProject
    - newCard
    - deleteProject
-   - updateCardStatus
+   - updateCard
+   - changeCardStatus
    - newNotif
 
    #### Consume :
@@ -85,6 +86,7 @@
    - newUser
    - newProject
    - newCard
+   - updateCard
    - deleteProject
    - updateCardStatus
 
