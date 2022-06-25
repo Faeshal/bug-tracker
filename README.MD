@@ -32,7 +32,7 @@
 
 4. Notif (MongoDB-express) [collections: notif,users ]
 
-   - get notifications by userId (search by content, filter by type, cursor based pagination )
+   - get notifications by userId (mongoose paginate)
 
    type notification:
 
