@@ -8,6 +8,8 @@ async function publish(dataObj) {
   const { stream } = dataObj;
   await redis.xadd(
     stream, // stream name
+    "MAXLEN",
+    "100000",
     "*", // means redis give incremental data id
     "data", // key
     JSON.stringify(dataObj) // value
