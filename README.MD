@@ -1,3 +1,7 @@
+## Bug Tracker (Redis Stream Version)
+
+![service map](https://i.postimg.cc/1t2JNzZB/bugtracker-drawio-drawio-1.png)
+
 ## List Of Services
 
 1. Auth (postgree-express) [table:users]
@@ -32,7 +36,7 @@
 
 4. Notif (MongoDB-express) [collections: notif,users ]
 
-   - get notifications by userId (mongoose paginate)
+   - get notifications by userId (mongoose paginate) ✅
 
    type notification:
 
@@ -102,7 +106,7 @@
 
 ## complementary thing
 
-- setup krakend api gateway
+- setup krakend api gateway ✅
 - clean up postman documentation
 - add good readme repository documentation
 
@@ -114,10 +118,10 @@
 
 ## improvement that can be done
 
-- user management feature, ex: forgot password, change password, advance permission etc.. (don't have much time to add this feature 🙏)
+- user management feature, ex: forgot password, change password, advance permission etc.. (don't have much time to add this feature)
 - add security package (hpp,helmet,csrf etc)
 - can add better message broker for advance event manager, ex: kafka
 - if still wanna using redis stream, please setup consumer group to each services for better load balancing
 - setup better event data store scenario, ex: if more than 90 days, store event to file not just in memory
 - write unit & integration test
-- add docker & kubernetes (if you have a lot of free time 🤣)
+- add docker & kubernetes (if you have a lot of free time)

@@ -11,10 +11,10 @@ router.post(
 );
 
 router.get(
-  "/api/v1/comments/cards/:id",
+  "/api/v1/comments/:id",
   protect,
   AuthorizeRole("user"),
-  commentController.getCommentByCardId
+  commentController.getComment
 );
 
 router.delete(
@@ -25,10 +25,10 @@ router.delete(
 );
 
 router.get(
-  "/api/v1/comments/:id",
+  "/api/v1/comments/cards/:id",
   protect,
   AuthorizeRole("user"),
-  commentController.getComment
+  commentController.getCommentByCardId
 );
 
 module.exports = router;
