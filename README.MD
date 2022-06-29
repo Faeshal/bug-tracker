@@ -2,6 +2,8 @@
 
 ![service map](https://i.postimg.cc/1t2JNzZB/bugtracker-drawio-drawio-1.png)
 
+#### Postman: https://www.getpostman.com/collections/33de3709312453dcdc95
+
 ## List Of Services
 
 1. Auth (postgree-express) [table:users]
