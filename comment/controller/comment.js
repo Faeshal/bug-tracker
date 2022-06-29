@@ -4,6 +4,7 @@ const Card = require("../models").card;
 const Comment = require("../models").comment;
 const User = require("../models").user;
 const _ = require("underscore");
+const { validationResult } = require("express-validator");
 const { ErrorResponse } = require("../middleware/errorHandler");
 const publish = require("../event/publisher");
 const log = require("log4js").getLogger("comment");
@@ -15,6 +16,14 @@ log.level = "info";
 exports.createComment = asyncHandler(async (req, res, next) => {
   let { content, cardId } = req.body;
   const { id, username } = req.user;
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
 
   // * check valid cardId
   const card = await Card.findOne({ where: { id: cardId } });

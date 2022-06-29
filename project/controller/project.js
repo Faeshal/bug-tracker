@@ -6,6 +6,7 @@ const User = require("../models").user;
 const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const paginate = require("../util/paginate");
+const { validationResult } = require("express-validator");
 const { ErrorResponse } = require("../middleware/errorHandler");
 const publish = require("../event/publisher");
 const log = require("log4js").getLogger("project");
@@ -72,6 +73,14 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   const creatorId = req.user.id;
   const { username } = req.user;
   members = _.unique(members);
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
 
   // * save to project
   const result = await Project.create({ title, description, creatorId });
@@ -153,6 +162,14 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user.id;
   const { title, description } = req.body;
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
 
   // * check is creator project ?
   const isCreator = await Project.findOne({ where: { id, creatorId: userId } });

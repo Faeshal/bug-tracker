@@ -5,6 +5,7 @@ const Card = require("../models").card;
 const Project = require("../models").project;
 const User_Project = require("../models").user_project;
 const _ = require("underscore");
+const { validationResult } = require("express-validator");
 const { ErrorResponse } = require("../middleware/errorHandler");
 const publish = require("../event/publisher");
 const log = require("log4js").getLogger("card");
@@ -16,6 +17,14 @@ log.level = "info";
 exports.createCard = asyncHandler(async (req, res, next) => {
   var { name, content, projectId } = req.body;
   const { id, username } = req.user;
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
 
   // * check valid projectId
   const project = await Project.findOne({ where: { id: parseInt(projectId) } });
@@ -147,6 +156,14 @@ exports.updateCard = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const { name, content } = req.body;
 
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
+
   // * check is creator project ?
   const isCreator = await Card.findOne({ where: { id, userId } });
   if (!isCreator) {
@@ -206,6 +223,14 @@ exports.changeCardStatus = asyncHandler(async (req, res, next) => {
   const { status } = req.body;
   const { username } = req.user;
   const currentUserId = req.user.id;
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
 
   // * check valid cardId
   const card = await Card.findOne({ where: { id: parseInt(id) } });

@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const User = require("../models").user;
 const _ = require("underscore");
 const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator");
 const {
   generateAccessToken,
   generateRefreshsToken,
@@ -19,6 +20,20 @@ log.level = "info";
 // @access    Public
 exports.register = asyncHandler(async (req, res, next) => {
   const { email, password, username, role, title } = req.body;
+
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
+
+  // * check double email
+  const emailExist = await User.findOne({ where: { email } });
+  if (emailExist) {
+    return next(new ErrorResponse("email already exist", 400));
+  }
 
   // * Hash Password
   const hashedPw = await bcrypt.hash(password, 12);
@@ -78,6 +93,14 @@ exports.register = asyncHandler(async (req, res, next) => {
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
+  }
+
   // * Check is email exist ?
   const user = await User.findOne({ where: { email } });
   if (!user) {
@@ -130,10 +153,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.refresh = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
 
-  if (!refreshToken) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Refresh Token Not Found" });
+  // *Express Validator
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new ErrorResponse(errors.array({ onlyFirstError: true })[0].msg, 400)
+    );
   }
 
   // * Verify Refresh Token

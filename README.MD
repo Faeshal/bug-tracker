@@ -114,11 +114,10 @@
 
 - better error handling
 - query validation
-- body json validation
+- some primary feature, ex: forgot password, change password, kick member from project, advance permission etc.. (don't have much time to add this feature)
 
 ## improvement that can be done
 
-- user management feature, ex: forgot password, change password, advance permission etc.. (don't have much time to add this feature)
 - add security package (hpp,helmet,csrf etc)
 - can add better message broker for advance event manager, ex: kafka
 - if still wanna using redis stream, please setup consumer group to each services for better load balancing
