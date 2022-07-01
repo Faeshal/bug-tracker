@@ -90,3 +90,5 @@
 - setup better event data storage scenario, ex: if more than 90 days, store event to file not just in memory
 - write unit & integration test
 - add docker & kubernetes (if you have a lot of free time)
+
+🗡 **July 2022 - [faeshal.com](https://faeshal.com)**
