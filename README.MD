@@ -1,128 +1,85 @@
 ## Bug Tracker (Redis Stream Version)
 
+### 🌙 sample bug tracker app with event-driven microservices architecture using Redis Stream as message broker just for educational purpose
+
 ![service map](https://i.postimg.cc/1t2JNzZB/bugtracker-drawio-drawio-1.png)
 
-#### Postman: https://www.getpostman.com/collections/33de3709312453dcdc95
+## Intro 🌴
 
-## List Of Services
+- Stack: Nodejs, Express, Postgre, MariaDB, MongoDB, Redis, JWT Auth, PM2, KrakenD API Gateway
+- API Docs: **[Postman](https://www.getpostman.com/collections/33de3709312453dcdc95)**
+- Find Kafka example ? **[bugtracker-kafka](https://github.com/Faeshal/bugtracker-kafka)**
 
-1. Auth (postgree-express) [table:users]
+## Detail Services 🔅
 
-   - register ✅
-   - login ✅
-   - logout ✅
-   - refresh token (jwt) ✅
-   - get current user data ✅
-   - get all users (+filter by name & offset based pagination) ✅
-   - get detail user ✅
+**1. Auth (postgree-express) [table:users]**
 
-2. Project (mariadb-express) [table:project,card,comment,users]
+- endpoint:
 
-   - create project ✅
-   - get projects (+filter by project title & offset based pagination) ✅
-   - get detail project ✅
-   - update project ✅
-   - delete project (cascade delete card) ✅
-   - create card ✅
-   - update card ✅
-   - delete card ✅
-   - get cards by projectId (+filter by status & cursor based pagination) ✅
-   - get detail card ✅
+  - register
+  - login
+  - logout
+  - refresh jwt token
+  - get current user data
+  - get all users (+filter by name & offset based pagination)
+  - get detail user
 
-3. Comment (mariadb-express) [table:comment,users,card,project]
+- event
+  - publish: newUser, newNotif
+  - consume: -
 
-   - create comment (when comment create, totalComment in card must be update too) ✅
-   - get comments by cardId (cursor based pagination) ✅
-   - get detail comments ✅
-   - delete comment ✅
+**2. Project (mariadb-express) [table:project,card,comment,users]**
 
-4. Notif (MongoDB-express) [collections: notif,users ]
+- note : here, i am still merging project service with the card service, i think the **coupling is too tight** to be place in separated services and because it is only for learning purpose, so ya i think it's ok to place it in the same service, for now.
 
-   - get notifications by userId (mongoose paginate) ✅
+- endpoint:
 
-   type notification:
+  - create project
+  - get projects (+filter by project title & offset based pagination)
+  - get detail project
+  - update, delete project (cascade delete card)
+  - create,update & delete card
+  - get cards by projectId (+filter by status & cursor based pagination)
+  - get detail card
 
-   - registration
-   - create project
-   - delete project
-   - create card
-   - change status card
-   - create commet
+- event
+  - publish: newProject, newCard, deleteProject, updateCard, changeCardStatus, newNotif
+  - consume: newUser, newComment, deleteComment
 
-## List Of Event
+**3. Comment (mariadb-express) [table:comment,users,card,project]**
 
-1. Auth:
+- endpoint:
 
-   ### Publish :
+  - create comment (when comment create, totalComment in card must be update too)
+  - get comments by cardId (cursor based pagination)
+  - get detail comments
+  - delete comment
 
-   - newUser
-   - newNotif
+- event:
+  - publish: newComment, deleteComment, newNotif
+  - consume: newUser, newProject, newCard, updateCard, deleteProject, updateCardStatus
 
-   ### Consume :
+4. Notif (MongoDB-express) [collections: notif ]
 
-   -
+- endpoint:
 
-2. Project:
+  - get notifications by userId (mongoose paginate). type notification: registration, create project, delete project, create card, change status card, create commet
 
-   #### Publish :
+- event:
+  - publish: -
+  - consume: newNotif
 
-   - newProject
-   - newCard
-   - deleteProject
-   - updateCard
-   - changeCardStatus
-   - newNotif
+## what's missing ? (reason: dont have free time to add it) 🙏
 
-   #### Consume :
+- you can add, category services for grouping card inside project
+- better error handling & query validation
+- some primary feature, ex: forgot password, change password, kick member from project, advance permission etc..
 
-   - newUser
-   - newComment
-   - deleteComment
-
-3. Comment:
-
-   #### Publish :
-
-   - newComment
-   - deleteComment
-   - newNotif
-
-   #### Consume :
-
-   - newUser
-   - newProject
-   - newCard
-   - updateCard
-   - deleteProject
-   - updateCardStatus
-
-4. Notif:
-
-   #### Publish :
-
-   -
-
-   #### Consume :
-
-   - newNotif
-
-## complementary thing
-
-- setup krakend api gateway ✅
-- clean up postman documentation
-- add good readme repository documentation
-
-## what's missing ? (reason: dont have free time to add it)
-
-- better error handling
-- query validation
-- some primary feature, ex: forgot password, change password, kick member from project, advance permission etc.. (don't have much time to add this feature)
-
-## improvement that can be done
+## improvement that can be done 🚧
 
 - add security package (hpp,helmet,csrf etc)
 - can add better message broker for advance event manager, ex: kafka
-- if still wanna using redis stream, please setup consumer group to each services for better load balancing
-- setup better event data store scenario, ex: if more than 90 days, store event to file not just in memory
+- if still wanna using redis stream, can setup consumer group to each services for better load balancing
+- setup better event data storage scenario, ex: if more than 90 days, store event to file not just in memory
 - write unit & integration test
 - add docker & kubernetes (if you have a lot of free time)

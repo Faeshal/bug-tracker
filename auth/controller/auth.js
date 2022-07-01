@@ -6,6 +6,7 @@ const User = require("../models").user;
 const _ = require("underscore");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
+const { ErrorResponse } = require("../middleware/errorHandler");
 const {
   generateAccessToken,
   generateRefreshsToken,
