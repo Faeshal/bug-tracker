@@ -9,6 +9,11 @@
 - Stack: Nodejs, Express, Postgre, MariaDB, MongoDB, Redis, JWT Auth, PM2, KrakenD API Gateway
 - API Docs: **[Postman](https://www.getpostman.com/collections/33de3709312453dcdc95)**
 - Find Kafka example ? **[bugtracker-kafka](https://github.com/Faeshal/bugtracker-kafka)**
+- Step run the app :
+  - install dependency & setup env for each services
+  - install [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/) & run each services with that
+  - install [Krakend](https://www.krakend.io/docs/overview/installing/), go to gateway folder & type `krakend run -c krakend.json`
+  - ready to go 🏎️
 
 ## Detail Services 🔅
 
@@ -78,8 +83,7 @@
 ## improvement that can be done 🚧
 
 - add security package (hpp,helmet,csrf etc)
-- can add better message broker for advance event manager, ex: kafka
-- if still wanna using redis stream, can setup consumer group to each services for better load balancing
+- you can setup consumer group to each services for better load balancing
 - setup better event data storage scenario, ex: if more than 90 days, store event to file not just in memory
 - write unit & integration test
 - add docker & kubernetes (if you have a lot of free time)
