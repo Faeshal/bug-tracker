@@ -1,11 +1,12 @@
-## Bug Tracker (Redis Stream Version)
+## Bug Tracker - Redis
 
-### 🌙 sample bug tracker app with event-driven microservices architecture using Redis Stream as message broker just for educational purpose
+### 🌙 sample bug tracker app with event-driven microservices architecture using Redis Streams as message broker just for educational purpose
 
-![service map](https://i.postimg.cc/1t2JNzZB/bugtracker-drawio-drawio-1.png)
+![service map](https://i.postimg.cc/y8rqggFw/23-1.png)
 
 ## Intro 🌴
 
+- Read: [Redis as a Message Broker](https://redis.com/solutions/use-cases/messaging/) & [Redis Streams](https://redis.io/docs/manual/data-types/streams/)📕
 - Stack: Nodejs, Express, Postgre, MariaDB, MongoDB, Redis, JWT Auth, PM2, KrakenD API Gateway
 - API Docs: **[Postman](https://www.getpostman.com/collections/33de3709312453dcdc95)**
 - Find Kafka example ? **[bugtracker-kafka](https://github.com/Faeshal/bugtracker-kafka)**
