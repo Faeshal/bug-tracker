@@ -1,12 +1,14 @@
 ## Bug Tracker - Redis
 
-### 🌙 sample bug tracker app with event-driven microservices architecture using Redis Streams as message broker just for educational purpose
+### 🌙 Sample bug tracker app with event-driven microservices architecture using Redis Streams as message broker for educational purpose
+
+![node](https://img.shields.io/badge/node-16.13.0-brightgreen) ![express](https://img.shields.io/badge/Express-4.17.1-lightgrey) ![redis](https://img.shields.io/badge/redis-6.2.6-red)
 
 ![service map](https://i.postimg.cc/y8rqggFw/23-1.png)
 
 ## Intro 🌴
 
-- Read: [Redis as a Message Broker](https://redis.com/solutions/use-cases/messaging/) & [Redis Streams](https://redis.io/docs/manual/data-types/streams/)📕
+- Read: [Redis as a Message Broker](https://redis.com/solutions/use-cases/messaging/) | [Redis Streams](https://redis.io/docs/manual/data-types/streams/) | [Event Driven with Redis Streams](https://harness.io/blog/continuous-delivery/event-driven-architecture-redis-streams/)📕
 - Stack: Nodejs, Express, Postgre, MariaDB, MongoDB, Redis, JWT Auth, PM2, KrakenD API Gateway
 - API Docs: **[Postman](https://www.getpostman.com/collections/33de3709312453dcdc95)**
 - Find Kafka example ? **[bugtracker-kafka](https://github.com/Faeshal/bugtracker-kafka)**
@@ -36,7 +38,7 @@
 
 **2. Project (mariadb-express) [table:project,card,comment,users]**
 
-- note : here, i am still merging project service with the card service, i think the **coupling is too tight** to be place in separated services and because it is only for learning purpose, so ya i think it's ok to place it in the same service, for now.
+- note : here, i am still merging project service with the card service, i think the **coupling is too tight** to be place in separated services and because it is only for learning purpose, so ya i think it's ok to place it in the same service.
 
 - endpoint:
 
@@ -65,7 +67,7 @@
   - publish: newComment, deleteComment, newNotif
   - consume: newUser, newProject, newCard, updateCard, deleteProject, updateCardStatus
 
-4. Notif (MongoDB-express) [collections: notif ]
+**4. Notif (MongoDB-express) [collections: notif ]**
 
 - endpoint:
 
