@@ -1,6 +1,6 @@
 ## Bug Tracker - Redis
 
-**✨ Sample bug tracker app with event-driven microservices architecture using Redis Streams as message broker for educational purpose**
+**✨ Sample bug tracker app ([Trello like](https://trello.com/en/tour)) with event-driven microservices architecture using Redis Streams as message broker for educational purpose**
 
 ![node](https://img.shields.io/badge/node-16.13.0-brightgreen) ![express](https://img.shields.io/badge/Express-4.17.1-lightgrey) ![redis](https://img.shields.io/badge/redis-6.2.6-red)
 
