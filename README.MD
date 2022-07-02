@@ -85,7 +85,6 @@
 
 ## improvement that can be done 🚧
 
-- add security package (hpp,helmet,csrf etc)
 - you can setup consumer group to each services for better load balancing
 - setup better event data storage scenario, ex: if more than 90 days, store event to file not just in memory
 - write unit & integration test

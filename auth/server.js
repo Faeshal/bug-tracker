@@ -22,7 +22,6 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(hpp());
 
 // * Cookie Parser
@@ -44,13 +43,7 @@ morgan.token("time", (req) => {
   const time = dayjs().format("h:mm:ss A") + " - " + user;
   return time;
 });
-
 app.use(morgan("morgan: [:time] :method :url - :status"));
-
-// * Session & Persistent Store
-
-// * Paginate
-// app.use(paginate.middleware(20, 50));
 
 // * Routing
 app.use(authRoutes);
